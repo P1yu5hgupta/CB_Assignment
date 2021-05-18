@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 
 import {getAllUsers} from '../../apiCall';
@@ -40,7 +41,7 @@ const HomeScreen = ({navigation}) => {
         <Image source={{uri: item.avatar_url}} style={styles.image} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>{item.login}</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL(item.html_url)}>
             <Text style={styles.link}>View On Github</Text>
           </TouchableOpacity>
         </View>
