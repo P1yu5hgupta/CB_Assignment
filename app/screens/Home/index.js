@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   Linking,
 } from 'react-native';
 
@@ -13,6 +14,7 @@ import {getAllUsers} from '../../apiCall';
 
 const HomeScreen = ({navigation}) => {
   const [users, setUsers] = useState([]);
+  const [isError, setError] = useState(false);
 
   useEffect(() => {
     getAllUsersApi();
@@ -20,7 +22,11 @@ const HomeScreen = ({navigation}) => {
 
   const getAllUsersApi = async () => {
     const data = await getAllUsers();
-    setUsers(data);
+    if (data.error) {
+      setError(true);
+    } else {
+      setUsers(data);
+    }
   };
 
   const renderHeader = () => {
@@ -53,11 +59,23 @@ const HomeScreen = ({navigation}) => {
       </View>
     );
   };
-  return (
+
+  const renderEmptyIndicator = () => {
+    return (
+      <ActivityIndicator size="large" color="black" style={styles.container} />
+    );
+  };
+
+  return isError ? (
+    <View style={styles.errorContainer}>
+      <Text>Error while loading.... Try again....</Text>
+    </View>
+  ) : (
     <View style={styles.container}>
       <FlatList
         data={users}
         renderItem={renderListItems}
+        ListEmptyComponent={renderEmptyIndicator}
         keyExtractor={item => item.id}
         ItemSeparatorComponent={renderSeperatorLine}
         ListHeaderComponent={renderHeader}
@@ -70,6 +88,11 @@ const HomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',

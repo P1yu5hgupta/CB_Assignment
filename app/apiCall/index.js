@@ -11,6 +11,11 @@ export const getUserData = async params => {
 };
 
 const apiCall = async url => {
-  const response = await axios.get(url);
-  return response.data;
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return {error: true};
+  }
 };
