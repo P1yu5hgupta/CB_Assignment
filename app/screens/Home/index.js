@@ -6,19 +6,26 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  TextInput,
   ActivityIndicator,
   Linking,
 } from 'react-native';
+// import {debounce} from 'lodash';
 
-import {getAllUsers} from '../../apiCall';
+import {getAllUsers, getUsersByName} from '../../apiCall';
 
 const HomeScreen = ({navigation}) => {
   const [users, setUsers] = useState([]);
   const [isError, setError] = useState(false);
+  const [searchName, setSearchName] = useState('');
 
   useEffect(() => {
-    getAllUsersApi();
-  }, []);
+    if (searchName.length === 0) {
+      getAllUsersApi();
+    } else {
+      getUsersByNameApi();
+    }
+  }, [searchName]);
 
   const getAllUsersApi = async () => {
     const data = await getAllUsers();
@@ -27,6 +34,15 @@ const HomeScreen = ({navigation}) => {
     } else {
       setUsers(data);
     }
+  };
+
+  const getUsersByNameApi = async () => {
+    const data = await getUsersByName({search: searchName});
+    setUsers(data.items);
+  };
+
+  const changeInputHandler = name => {
+    setSearchName(name);
   };
 
   const renderHeader = () => {
@@ -72,14 +88,18 @@ const HomeScreen = ({navigation}) => {
     </View>
   ) : (
     <View style={styles.container}>
+      {renderHeader()}
+      <TextInput
+        placeholder="Search By Name"
+        value={searchName}
+        onChangeText={changeInputHandler}
+      />
       <FlatList
         data={users}
         renderItem={renderListItems}
         ListEmptyComponent={renderEmptyIndicator}
         keyExtractor={item => item.id}
         ItemSeparatorComponent={renderSeperatorLine}
-        ListHeaderComponent={renderHeader}
-        stickyHeaderIndices={[0]}
       />
     </View>
   );

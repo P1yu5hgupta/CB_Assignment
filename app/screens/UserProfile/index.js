@@ -14,6 +14,7 @@ const UserProfileScreen = ({route, navigation}) => {
   const name = route.params ? route.params.name : null;
 
   const [userData, setUserData] = useState({});
+  const [isError, setError] = useState(false);
 
   useEffect(() => {
     getUserDataApi();
@@ -21,11 +22,18 @@ const UserProfileScreen = ({route, navigation}) => {
 
   const getUserDataApi = async () => {
     const data = await getUserData({name: name});
-    console.log(data);
-    setUserData(data);
+    if (data.error) {
+      setError(true);
+    } else {
+      setUserData(data);
+    }
   };
 
-  return (
+  return isError ? (
+    <View style={styles.errorContainer}>
+      <Text>Error while loading.... Try again....</Text>
+    </View>
+  ) : (
     <View style={styles.container}>
       <View style={styles.userInfo}>
         <Image source={{uri: userData.avatar_url}} style={styles.image} />
@@ -64,6 +72,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   userInfo: {
     flexDirection: 'row',
