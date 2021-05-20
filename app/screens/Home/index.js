@@ -10,13 +10,13 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
-// import {debounce} from 'lodash';
 
 import {getAllUsers, getUsersByName} from '../../apiCall';
 
 const HomeScreen = ({navigation}) => {
   const [users, setUsers] = useState([]);
   const [isError, setError] = useState(false);
+  const [isApiLoading, setApiLoading] = useState(true);
   const [searchName, setSearchName] = useState('');
 
   useEffect(() => {
@@ -33,12 +33,18 @@ const HomeScreen = ({navigation}) => {
       setError(true);
     } else {
       setUsers(data);
+      setApiLoading(false);
     }
   };
 
   const getUsersByNameApi = async () => {
     const data = await getUsersByName({search: searchName});
-    setUsers(data.items);
+    if (data.error) {
+      setError(true);
+    } else {
+      setUsers(data.items);
+      setApiLoading(false);
+    }
   };
 
   const changeInputHandler = name => {
@@ -78,11 +84,15 @@ const HomeScreen = ({navigation}) => {
 
   const renderEmptyIndicator = () => {
     return (
-      <ActivityIndicator size="large" color="black" style={styles.container} />
+      <View style={styles.container}>
+        <Text style={styles.noUserText}>No User Found</Text>
+      </View>
     );
   };
 
-  return isError ? (
+  return isApiLoading ? (
+    <ActivityIndicator size="large" color="black" style={styles.container} />
+  ) : isError ? (
     <View style={styles.errorContainer}>
       <Text>Error while loading.... Try again....</Text>
     </View>
@@ -93,6 +103,7 @@ const HomeScreen = ({navigation}) => {
         placeholder="Search By Name"
         value={searchName}
         onChangeText={changeInputHandler}
+        style={styles.searchBox}
       />
       <FlatList
         data={users}
@@ -125,6 +136,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 25,
     fontWeight: 'bold',
+  },
+  searchBox: {
+    borderRadius: 8,
+    borderWidth: 2,
+    marginHorizontal: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
   listItem: {
     flexDirection: 'row',
@@ -165,6 +183,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     alignSelf: 'center',
+  },
+  noUserText: {
+    alignSelf: 'center',
+    color: 'gray',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 export default HomeScreen;
