@@ -4,6 +4,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
   StyleSheet,
   Linking,
 } from 'react-native';
@@ -11,11 +12,16 @@ import {
 import useProfile from './useProfile';
 
 const UserProfileScreen = ({route, navigation}) => {
-  const {userData, isError} = useProfile(route, navigation);
+  const {userData, isError, isApiLoading, refreshHandler} = useProfile(route);
 
-  return isError ? (
+  return isApiLoading ? (
+    <ActivityIndicator size="large" color="black" style={styles.container} />
+  ) : isError ? (
     <View style={styles.errorContainer}>
-      <Text>Error while loading.... Try again....</Text>
+      <Text>Error!!</Text>
+      <TouchableOpacity onPress={refreshHandler} style={styles.refreshButton}>
+        <Text style={styles.refreshText}> Try Again </Text>
+      </TouchableOpacity>
     </View>
   ) : (
     <View style={styles.container}>
@@ -108,6 +114,14 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     alignSelf: 'center',
+  },
+  refreshButton: {
+    borderRadius: 4,
+    backgroundColor: 'black',
+    padding: 8,
+  },
+  refreshText: {
+    color: 'white',
   },
 });
 export default UserProfileScreen;

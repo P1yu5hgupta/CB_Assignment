@@ -39,12 +39,19 @@ function useHome() {
     setSearchName(name);
   };
 
+  const refreshHandler = () => {
+    setError(false);
+    setApiLoading(true);
+    getAllUsersApi();
+  };
+
   return {
     users,
     isError,
     isApiLoading,
     searchName,
     changeInputHandler,
+    refreshHandler,
   };
 }
 

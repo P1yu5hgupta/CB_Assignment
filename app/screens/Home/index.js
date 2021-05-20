@@ -14,8 +14,14 @@ import {
 import useHome from './useHome';
 
 const HomeScreen = ({navigation}) => {
-  const {users, isError, isApiLoading, searchName, changeInputHandler} =
-    useHome(navigation);
+  const {
+    users,
+    isError,
+    isApiLoading,
+    searchName,
+    changeInputHandler,
+    refreshHandler,
+  } = useHome(navigation);
 
   const renderHeader = () => {
     return (
@@ -60,7 +66,10 @@ const HomeScreen = ({navigation}) => {
     <ActivityIndicator size="large" color="black" style={styles.container} />
   ) : isError ? (
     <View style={styles.errorContainer}>
-      <Text>Error while loading.... Try again....</Text>
+      <Text>Error!!</Text>
+      <TouchableOpacity onPress={refreshHandler} style={styles.refreshButton}>
+        <Text style={styles.refreshText}> Try Again </Text>
+      </TouchableOpacity>
     </View>
   ) : (
     <View style={styles.container}>
@@ -155,6 +164,14 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  refreshButton: {
+    borderRadius: 4,
+    backgroundColor: 'black',
+    padding: 8,
+  },
+  refreshText: {
+    color: 'white',
   },
 });
 export default HomeScreen;
