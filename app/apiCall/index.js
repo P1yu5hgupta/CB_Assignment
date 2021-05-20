@@ -20,6 +20,11 @@ export const getReposByUser = async params => {
   return apiCall(urlToSend.replace(':username', params.username));
 };
 
+export const getSubsByUser = async params => {
+  const urlToSend = apiList.getSubsByUser;
+  return apiCall(urlToSend.replace(':username', params.username));
+};
+
 const apiCall = async url => {
   try {
     const response = await axios.get(url);

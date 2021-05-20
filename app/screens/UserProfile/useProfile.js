@@ -1,13 +1,23 @@
 import {useEffect, useState} from 'react';
+import {useWindowDimensions} from 'react-native';
 
-import {getUserData} from '../../apiCall';
+import {getUserData, getReposByUser, getSubsByUser} from '../../apiCall';
 
 function useProfile(route) {
   const name = route.params ? route.params.name : null;
+  const layout = useWindowDimensions();
 
   const [userData, setUserData] = useState({});
   const [isError, setError] = useState(false);
   const [isApiLoading, setApiLoading] = useState(true);
+  const [isUserDetailsLoading, setUserDetailsLoading] = useState(true);
+  const [repoList, setRepoList] = useState([]);
+  const [subsList, setSubsList] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    {key: 'repo', title: 'Repositories'},
+    {key: 'subs', title: 'Subscriptions'},
+  ]);
 
   useEffect(() => {
     getUserDataApi();
@@ -20,7 +30,23 @@ function useProfile(route) {
     } else {
       setUserData(data);
       setApiLoading(false);
+      getUserDetailsApi();
     }
+  };
+
+  const getUserDetailsApi = async () => {
+    await Promise.all([getReposByUserApi(), getSubsByUserApi()]);
+    setUserDetailsLoading(false);
+  };
+
+  const getReposByUserApi = async () => {
+    const data = await getReposByUser({username: name});
+    setRepoList(data);
+  };
+
+  const getSubsByUserApi = async () => {
+    const data = await getSubsByUser({username: name});
+    setSubsList(data);
   };
 
   const refreshHandler = () => {
@@ -33,7 +59,14 @@ function useProfile(route) {
     userData,
     isError,
     isApiLoading,
+    layout,
+    index,
+    setIndex,
+    routes,
+    repoList,
+    subsList,
     refreshHandler,
+    isUserDetailsLoading,
   };
 }
 

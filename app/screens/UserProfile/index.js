@@ -8,11 +8,30 @@ import {
   StyleSheet,
   Linking,
 } from 'react-native';
+import {TabView, SceneMap} from 'react-native-tab-view';
 
+import ListView from './components/listView';
 import useProfile from './useProfile';
 
 const UserProfileScreen = ({route, navigation}) => {
-  const {userData, isError, isApiLoading, refreshHandler} = useProfile(route);
+  const {
+    userData,
+    isError,
+    isApiLoading,
+    layout,
+    index,
+    setIndex,
+    routes,
+    repoList,
+    subsList,
+    refreshHandler,
+    isUserDetailsLoading,
+  } = useProfile(route);
+
+  const renderScene = SceneMap({
+    repo: () => <ListView data={repoList} />,
+    subs: () => <ListView data={subsList} />,
+  });
 
   return isApiLoading ? (
     <ActivityIndicator size="large" color="black" style={styles.container} />
@@ -54,6 +73,21 @@ const UserProfileScreen = ({route, navigation}) => {
         onPress={() => navigation.goBack()}>
         <Text style={styles.buttonText}>Go to HomePage</Text>
       </TouchableOpacity>
+      {isUserDetailsLoading ? (
+        <ActivityIndicator
+          size="large"
+          color="black"
+          style={styles.container}
+        />
+      ) : (
+        <TabView
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{width: layout.width}}
+          style={{marginTop: 10}}
+        />
+      )}
     </View>
   );
 };
