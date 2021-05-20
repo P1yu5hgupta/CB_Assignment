@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -8,26 +8,10 @@ import {
   Linking,
 } from 'react-native';
 
-import {getUserData} from '../../apiCall';
+import useProfile from './useProfile';
 
 const UserProfileScreen = ({route, navigation}) => {
-  const name = route.params ? route.params.name : null;
-
-  const [userData, setUserData] = useState({});
-  const [isError, setError] = useState(false);
-
-  useEffect(() => {
-    getUserDataApi();
-  }, []);
-
-  const getUserDataApi = async () => {
-    const data = await getUserData({name: name});
-    if (data.error) {
-      setError(true);
-    } else {
-      setUserData(data);
-    }
-  };
+  const {userData, isError} = useProfile(route, navigation);
 
   return isError ? (
     <View style={styles.errorContainer}>

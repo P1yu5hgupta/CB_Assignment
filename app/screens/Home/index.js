@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -11,45 +11,11 @@ import {
   Linking,
 } from 'react-native';
 
-import {getAllUsers, getUsersByName} from '../../apiCall';
+import useHome from './useHome';
 
 const HomeScreen = ({navigation}) => {
-  const [users, setUsers] = useState([]);
-  const [isError, setError] = useState(false);
-  const [isApiLoading, setApiLoading] = useState(true);
-  const [searchName, setSearchName] = useState('');
-
-  useEffect(() => {
-    if (searchName.length === 0) {
-      getAllUsersApi();
-    } else {
-      getUsersByNameApi();
-    }
-  }, [searchName]);
-
-  const getAllUsersApi = async () => {
-    const data = await getAllUsers();
-    if (data.error) {
-      setError(true);
-    } else {
-      setUsers(data);
-      setApiLoading(false);
-    }
-  };
-
-  const getUsersByNameApi = async () => {
-    const data = await getUsersByName({search: searchName});
-    if (data.error) {
-      setError(true);
-    } else {
-      setUsers(data.items);
-      setApiLoading(false);
-    }
-  };
-
-  const changeInputHandler = name => {
-    setSearchName(name);
-  };
+  const {users, isError, isApiLoading, searchName, changeInputHandler} =
+    useHome(navigation);
 
   const renderHeader = () => {
     return (
